@@ -40,7 +40,7 @@ def start_connection():
     print("The client has been shut down successfully.")
 
 if __name__ == '__main__':
-    client = Client("localhost", 12345)
+    client = Client("secure-byod-vpn.onrender.com", 8080)
     client.connect()
     client.send_message(create_message())
     response = client.receive_message()

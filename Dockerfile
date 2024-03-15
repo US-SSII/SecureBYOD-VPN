@@ -29,11 +29,11 @@ WORKDIR $DockerHOME
 RUN pip install --no-cache-dir -r ./requirements.txt
 
 # port where the Django app runs
-EXPOSE 8080
+EXPOSE 12345
 
 # start server
-CMD ["python", "run_server.py", "0.0.0.0", "8080"]
+CMD ["python", "run_server.py", "0.0.0.0", "12345"]
 
 
-# To build -> docker build -t my-django-app .
-# To run -> docker run -p 12345:12345 my-django-app
+# To build -> docker build -t secure_byod_vpn .
+# To run -> docker run -p 12345:12345 secure_byod_vpn
