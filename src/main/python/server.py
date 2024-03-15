@@ -47,6 +47,7 @@ class Server:
 
         self.running = True
         while self.running:
+            logger.info("Waiting for incoming connections...")
             try:
                 client_socket, _ = self.server_socket.accept()
                 threading.Thread(target=self.handle_client, args=(client_socket,)).start()
@@ -64,6 +65,7 @@ class Server:
         """
         try:
             while True:
+                logger.info("Waiting for a message from the client...")
                 active, _, _ = select.select([client_socket], [], [], 1)
                 if not active:
                     continue
@@ -74,6 +76,7 @@ class Server:
 
                 received_message = data.decode()
                 message = self.actions(received_message)
+                logger.info(f"Sending message: {message}")
                 self.send_message_in_chunks(client_socket, message)
 
         except Exception as e:

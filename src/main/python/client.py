@@ -1,5 +1,7 @@
 import socket
 
+from loguru import logger
+
 
 class Client:
     """
@@ -24,6 +26,7 @@ class Client:
         """
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((self.host, self.port))
+        print(f"Connected to {self.host}:{self.port}")
 
     def send_message(self, message: str) -> None:
         """
@@ -61,7 +64,9 @@ class Client:
             message = ""
             while True:
                 data = self.client_socket.recv(1024).decode()  # Receive data from the client
+                logger.info(f"Received data: {data}")
                 if data == "END":
+                    logger.info("End of message")
                     break  # If no data, the client has closed the connection
                 message += data
             return message
