@@ -21,6 +21,7 @@ RUN pip install --upgrade pip
 
 # copy whole project to your docker home directory.
 COPY . $DockerHOME
+COPY ./src/main/python/config.ini $DockerHOME
 
 WORKDIR $DockerHOME
 
