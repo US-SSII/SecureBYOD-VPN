@@ -142,8 +142,10 @@ class Server:
         chunk_size = 512
         for i in range(0, len(message), chunk_size):
             chunk = message[i:i + chunk_size]
+            logger.info(f"Sending chunk: {chunk}")
             client_socket.sendall(chunk.encode("utf-8"))
-
+        time.sleep(0.001)
+        logger.info("Sending end of message")
         client_socket.sendall("END".encode("utf-8"))
 
     def stop(self) -> None:
