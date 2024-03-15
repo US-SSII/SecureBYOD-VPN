@@ -1,6 +1,12 @@
+import threading
 import time
+from configparser import ConfigParser
 
-from src.main.python.cases import *
+
+
+from src.main.python.client import Client
+from src.main.python.create_message import create_message
+from src.main.python.server import Server
 from src.main.python.statistics import create_report
 
 
@@ -34,5 +40,10 @@ def start_connection():
     print("The client has been shut down successfully.")
 
 if __name__ == '__main__':
-    client = Client("192.168.0.29", 12345)
+    client = Client("secure-byod-vpn.onrender.com", 12345)
     client.connect()
+    client.send_message(create_message())
+    response = client.receive_message()
+    print(response)
+    client.close()
+    print("The client has been shut down successfully.")

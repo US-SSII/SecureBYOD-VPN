@@ -28,10 +28,10 @@ WORKDIR $DockerHOME
 RUN pip install --no-cache-dir -r ./requirements.txt
 
 # port where the Django app runs
-EXPOSE 12345
+EXPOSE 8080
 
 # start server
-CMD ["python", "run_server.py", "0.0.0.0", "12345"]
+CMD ["python", "run_server.py", "0.0.0.0", "8080"]
 
 
 # To build -> docker build -t my-django-app .
