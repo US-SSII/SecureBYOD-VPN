@@ -38,7 +38,7 @@ class Server:
             server_cert = generate_certificate(server_key, "server.example.com")
             save_key_and_certificate(server_key, server_cert, cert_file, key_file)
 
-        context.use_privatekey_file(key_file)
+        context.use_privatekey_file(key_file, SSL.FILETYPE_PEM)
         context.use_certificate_file(cert_file)
 
         return context
