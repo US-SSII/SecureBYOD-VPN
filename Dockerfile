@@ -35,5 +35,5 @@ EXPOSE 12345
 CMD ["python", "run_server.py", "0.0.0.0", "12345"]
 
 
-# To build -> docker build -t secure_byod_vpn .
-# To run -> docker run -p 12345:12345 secure_byod_vpn
+# To build -> docker build -t alesanfel/secure_byod_vpn .
+# To run -> docker run -p 12345:12345 alesanfel/secure_byod_vpn
