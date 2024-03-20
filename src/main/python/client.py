@@ -1,6 +1,6 @@
 import socket
-
 from loguru import logger
+from OpenSSL import SSL
 
 
 class Client:
@@ -22,11 +22,12 @@ class Client:
 
     def connect(self) -> None:
         """
-        Establishes a connection to the server.
+        Establishes a secure connection to the server using SSL/TLS.
         """
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # TODO: Use SSL
+        context = SSL.Context(SSL.SSLv23_METHOD)
+        self.client_socket = SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         self.client_socket.connect((self.host, self.port))
-        print(f"Connected to {self.host}:{self.port}")
+        logger.info(f"Connected to {self.host}:{self.port} securely")
 
     def send_message(self, message: str) -> None:
         """
@@ -44,8 +45,8 @@ class Client:
         try:
             self.client_socket.sendall(message.encode())
             # Add any additional logic here, such as waiting for a response from the server
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Error sending message: {e}")
 
     def receive_message(self) -> str:
         """
@@ -70,14 +71,14 @@ class Client:
                     break  # If no data, the client has closed the connection
                 message += data
             return message
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Error receiving message: {e}")
 
     def close(self) -> None:
         """
         Closes the connection with the server.
         """
         if self.client_socket:
+            self.client_socket.shutdown()
             self.client_socket.close()
-
-
+            logger.info("Connection closed")
