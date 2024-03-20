@@ -36,13 +36,13 @@ class Server:
         """
         Start the server listening for incoming connections.
         """
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # TODO: Use SSL
         self.server_socket.bind((self.host, int(self.port)))
         self.server_socket.listen(5)
         load_logger(self.is_test)
 
-        threading.Thread(target=self.print_scheduler).start()
-        schedule.every(30).days.do(lambda: self.execute_non_blocking(create_report))
+        # threading.Thread(target=self.print_scheduler).start()
+        # schedule.every(30).days.do(lambda: self.execute_non_blocking(create_report))
         logger.info("The server has started successfully.")
 
         self.running = True
@@ -93,31 +93,7 @@ class Server:
         Returns:
             str: Server response to the client.
         """
-
-        nonce_manager = NonceManager(os.path.join(current_directory, "../resources/nonces.json"))
-        message_dict = json.loads(received_message)
-        mac = message_dict.pop("mac")
-        nonce = message_dict.pop("nonce")
-        date = datetime.strptime(message_dict.pop("date"), "%Y-%m-%d %H:%M:%S.%f")
-        json_str = json.dumps(message_dict, ensure_ascii=False)
-        message = f"{message_dict['origin_account']} - {message_dict['receiver_account']} - {message_dict['amount']}"
-
-        modification_attack = not validate_message(json_str, nonce, date, mac)
-        replay_attack = not nonce_manager.not_repeated(nonce)
-
-        if not modification_attack and not replay_attack:
-            logger.success(f"Message received successfully: {message}")
-            message = f"Received message: {message}"
-        elif modification_attack and replay_attack:
-            logger.error(f"Message has been modified and is a replay: {message}")
-            message = "Message has been modified and is a replay."
-        elif modification_attack:
-            logger.error(f"Message has been modified: {message}")
-            message = "Message has been modified."
-        elif replay_attack:
-            logger.error(f"Message is a replay: {message}")
-            message = "Message is a replay."
-        return message
+        return received_message
 
     def execute_non_blocking(self, func: callable) -> None:
         """

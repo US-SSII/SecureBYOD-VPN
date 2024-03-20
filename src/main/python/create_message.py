@@ -11,7 +11,7 @@ def create_message() -> str:
     Returns:
         str: JSON message with MAC summary.
     """
-    message = JSONMessage(input("Source account: "), input("Receiver account: "), input("Amount: "))
+    message = JSONMessage(input("Username: "), input("Password: "), input("Meesage: "))
     return message.to_json()
 
 def random_message() -> str:
@@ -21,7 +21,7 @@ def random_message() -> str:
     Returns:
         str: Random JSON message with MAC summary.
     """
-    message = JSONMessage(generate_random_string(50), generate_random_string(50), random.randint(0, 1000))
+    message = JSONMessage(generate_random_string(50), generate_random_string(50), generate_random_string(50))
     return message.to_json()
 
 def generate_random_string(length):

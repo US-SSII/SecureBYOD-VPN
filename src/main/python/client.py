@@ -24,7 +24,7 @@ class Client:
         """
         Establishes a connection to the server.
         """
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # TODO: Use SSL
         self.client_socket.connect((self.host, self.port))
         print(f"Connected to {self.host}:{self.port}")
 
