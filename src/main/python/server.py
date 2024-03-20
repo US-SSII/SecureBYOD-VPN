@@ -3,6 +3,7 @@ import socket
 import threading
 import time
 
+import OpenSSL
 import select
 from OpenSSL import SSL
 from loguru import logger
@@ -36,7 +37,7 @@ class Server:
             logger.error(f"Certificate or key files not found: {cert_file} and {key_file}")
             server_key = generate_key_pair()
             server_cert = generate_certificate(server_key, "server.example.com")
-            save_key_and_certificate(server_key, server_cert, cert_file, key_file)
+            save_key_and_certificate(server_key, server_cert, key_file, cert_file)
 
         context.use_privatekey_file(key_file, SSL.FILETYPE_PEM)
         context.use_certificate_file(cert_file)
@@ -75,6 +76,8 @@ class Server:
                 message = self.actions(received_message)
                 self.send_message_in_chunks(client_socket, message)
 
+        except OpenSSL.SSL.ZeroReturnError:
+            logger.info(f"Connection closed by the client.") # TODO: Tomar medidas si es necesario
         except Exception as e:
             logger.error(f"Error: {e}")
         finally:

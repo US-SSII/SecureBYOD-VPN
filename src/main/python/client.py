@@ -1,6 +1,7 @@
 import socket
 from loguru import logger
 from OpenSSL import SSL
+from OpenSSL.SSL import ZeroReturnError
 
 
 class Client:
@@ -66,9 +67,12 @@ class Client:
             while True:
                 data = self.client_socket.recv(1024).decode()  # Receive data from the client
                 logger.info(f"Received data: {data}")
-                if data == "END":
+                if not data:
+                    logger.info("Connection closed by the server")
+                    break
+                if "END" in data:
                     logger.info("End of message")
-                    break  # If no data, the client has closed the connection
+                    break
                 message += data
             return message
         except Exception as e:
@@ -82,3 +86,4 @@ class Client:
             self.client_socket.shutdown()
             self.client_socket.close()
             logger.info("Connection closed")
+
