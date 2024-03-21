@@ -2,17 +2,23 @@ import os
 import socket
 import threading
 import time
+from configparser import ConfigParser
 
 import OpenSSL
 import select
 from OpenSSL import SSL
 from loguru import logger
 
-from src.main.python.generate_creatificates_and_keys import generate_key_pair, generate_certificate, \
+from src.main.python.certificate_utils import generate_key_pair, generate_certificate, \
     save_key_and_certificate_with_alias
-from src.main.python.keystore import jks_file_to_context
+from src.main.python.ssl_context_utils import jks_file_to_context
 
+# CONSTANTS
 current_directory = os.path.dirname(os.path.abspath(__file__))
+config = ConfigParser()
+keystores_path = os.path.join(current_directory, config.get("KEYSTORE", "path"))
+server_alias = config.get("SERVER", "alias")
+common_name = config.get("SERVER", "common_name")
 
 
 class Server:
@@ -22,23 +28,33 @@ class Server:
         self.server_socket = None
         self.is_test = is_test
         self.running = False
+        with open("config.ini", "r") as f:
+            # Muestrra las variables
+            while True:
+                line = f.readline()
+                if not line:
+                    break
+                v = line.split("=")
+                logger.info(f"Variables: {v}")
+        logger.info(f"Server initialized with host: {host} and port: {port}")
+
 
     def load_certificate(self) -> SSL.Context:
         """
         Load SSL certificate and private key for the server.
         """
-        try:
-            # Intenta cargar el contexto utilizando el alias del servidor desde la keystore
-            context = jks_file_to_context("server_alias")
-        except (KeyError, FileNotFoundError):
+
+
+        if not os.path.exists(keystores_path):
             # Si el alias no está presente en la keystore o la keystore no está disponible,
             # genera un nuevo par de clave y certificado y lo guarda en la keystore
             logger.info("Certificate or key not found in keystore. Generating new ones...")
             server_key = generate_key_pair()
-            server_cert = generate_certificate(server_key, "server.example.com")
-            save_key_and_certificate_with_alias(server_key, server_cert, "server_alias")
-            # Intenta cargar el contexto nuevamente después de guardar el nuevo par de clave y certificado
-            context = jks_file_to_context("server_alias")
+            server_cert = generate_certificate(server_key, common_name)
+            save_key_and_certificate_with_alias(server_key, server_cert, server_alias)
+        # Intenta cargar el contexto nuevamente después de guardar el nuevo par de clave y certificado
+        context = jks_file_to_context(server_alias)
+
         return context
 
     def start(self) -> None:

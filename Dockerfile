@@ -18,12 +18,13 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 
 # Install necessary system libraries
+RUN apt-get update \
+    && apt-get install -y gcc
 
 # copy whole project to your docker home directory.
 COPY . $DockerHOME
 COPY ./src/main/python/config.ini $DockerHOME
-
-WORKDIR $DockerHOME
+COPY ./src/main/python/config.ini $DockerHOME/src/main/python
 
 # run this command to install all dependencies
 RUN pip install --no-cache-dir -r ./requirements.txt
@@ -33,7 +34,6 @@ EXPOSE 12345
 
 # start server
 CMD ["python", "run_server.py", "0.0.0.0", "12345"]
-
 
 # To build -> docker build -t alesanfel/secure_byod_vpn .
 # To run -> docker run -p 12345:12345 alesanfel/secure_byod_vpn

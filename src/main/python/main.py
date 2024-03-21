@@ -1,7 +1,6 @@
 from threading import Thread
 
 from src.main.python.client import Client
-from src.main.python.keystore import create_keystore
 from src.main.python.server import Server
 
 if __name__ == "__main__":
