@@ -1,4 +1,6 @@
 import socket
+
+import OpenSSL
 from loguru import logger
 from OpenSSL import SSL
 from OpenSSL.SSL import ZeroReturnError
@@ -25,7 +27,7 @@ class Client:
         """
         Establishes a secure connection to the server using SSL/TLS.
         """
-        context = SSL.Context(SSL.SSLv23_METHOD)
+        context= OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
         self.client_socket = SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         self.client_socket.connect((self.host, self.port))
         logger.info(f"Connected to {self.host}:{self.port} securely")

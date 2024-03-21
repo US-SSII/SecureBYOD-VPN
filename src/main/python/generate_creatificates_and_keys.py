@@ -1,4 +1,6 @@
+import OpenSSL
 from OpenSSL import crypto
+import jks
 
 
 def generate_key_pair():
@@ -21,23 +23,35 @@ def generate_certificate(key, common_name):
     return cert
 
 
-def save_key_and_certificate(key, cert, key_filename, cert_filename):
+def save_key_and_certificate_with_alias(key, cert, alias):
     # Guardar la clave privada
-    with open(key_filename, 'wb') as f:
-        f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, key))
+    keystore_filename = "../resources/keystore.jks"
+    keystore_password = "keystore_password"
+    try:
+        try:
+            keystore = jks.KeyStore.load(keystore_filename, keystore_password)
+        except jks.BadKeystoreError:
+            keystore = jks.KeyStore.new("jks", [])
 
-    # Guardar el certificado
-    with open(cert_filename, 'wb') as f:
-        f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+        dumped_cert = OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_ASN1, cert)
+        dumped_key = OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_ASN1, key)
+        private_key = jks.PrivateKeyEntry.new(alias, [dumped_cert], dumped_key, 'rsa_raw')
+        keystore.entries[alias] = private_key
+
+        # Guardar el almacén de claves en el archivo
+        keystore.save(keystore_filename, keystore_password)
+        print(f"Key and certificate with alias '{alias}' saved to keystore successfully.")
+    except Exception as e:
+        print(f"Error saving key and certificate: {e}")
 
 
 # Generar claves y certificados para el servidor
 if __name__ == "__main__":
     server_key = generate_key_pair()
     server_cert = generate_certificate(server_key, "server.example.com")
-    save_key_and_certificate(server_key, server_cert, "server.key", "server.crt")
+    save_key_and_certificate_with_alias(server_key, server_cert, "server_alias")
 
     # Generar claves y certificados para el cliente
     client_key = generate_key_pair()
     client_cert = generate_certificate(client_key, "client.example.com")
-    save_key_and_certificate(client_key, client_cert, "client.key", "client.crt")
+    save_key_and_certificate_with_alias(client_key, client_cert, "client_alias")

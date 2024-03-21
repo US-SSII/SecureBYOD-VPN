@@ -9,7 +9,8 @@ from OpenSSL import SSL
 from loguru import logger
 
 from src.main.python.generate_creatificates_and_keys import generate_key_pair, generate_certificate, \
-    save_key_and_certificate
+    save_key_and_certificate_with_alias
+from src.main.python.keystore import jks_file_to_context
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -26,22 +27,18 @@ class Server:
         """
         Load SSL certificate and private key for the server.
         """
-        context = SSL.Context(SSL.SSLv23_METHOD)
-        context.set_options(SSL.OP_NO_SSLv2 | SSL.OP_NO_SSLv3)
-
-        cert_file = os.path.join(current_directory, "../resources/server.crt")
-        key_file = os.path.join(current_directory, "../resources/server.key")
-
-        # Comprueba si existen esos archivos
-        if not os.path.exists(cert_file) or not os.path.exists(key_file):
-            logger.error(f"Certificate or key files not found: {cert_file} and {key_file}")
+        try:
+            # Intenta cargar el contexto utilizando el alias del servidor desde la keystore
+            context = jks_file_to_context("server_alias")
+        except (KeyError, FileNotFoundError):
+            # Si el alias no está presente en la keystore o la keystore no está disponible,
+            # genera un nuevo par de clave y certificado y lo guarda en la keystore
+            logger.info("Certificate or key not found in keystore. Generating new ones...")
             server_key = generate_key_pair()
             server_cert = generate_certificate(server_key, "server.example.com")
-            save_key_and_certificate(server_key, server_cert, key_file, cert_file)
-
-        context.use_privatekey_file(key_file, SSL.FILETYPE_PEM)
-        context.use_certificate_file(cert_file)
-
+            save_key_and_certificate_with_alias(server_key, server_cert, "server_alias")
+            # Intenta cargar el contexto nuevamente después de guardar el nuevo par de clave y certificado
+            context = jks_file_to_context("server_alias")
         return context
 
     def start(self) -> None:
