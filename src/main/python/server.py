@@ -36,8 +36,6 @@ class Server:
         """
         Load SSL certificate and private key for the server.
         """
-
-
         if not os.path.exists(keystores_path):
             # Si el alias no está presente en la keystore o la keystore no está disponible,
             # genera un nuevo par de clave y certificado y lo guarda en la keystore
