@@ -28,6 +28,8 @@ class Client:
         Establishes a secure connection to the server using SSL/TLS.
         """
         context= OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
+        cipher_suite = "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+        context.set_cipher_list(cipher_suite)
         self.client_socket = OpenSSL.SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         self.client_socket.connect((self.host, self.port))
         logger.info(f"Connected to {self.host}:{self.port} securely")

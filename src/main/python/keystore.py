@@ -19,6 +19,8 @@ def jks_file_to_context(key_alias, key_password=None):
                      for alias, cert in keystore.certs]
 
     ctx = OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
+    cipher_suite = "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+    ctx.set_cipher_list(cipher_suite)
     ctx.use_privatekey(pkey)
     ctx.use_certificate(public_cert)
     ctx.check_privatekey() # want to know ASAP if there is a problem
