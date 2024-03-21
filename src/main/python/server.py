@@ -29,14 +29,6 @@ class Server:
         self.server_socket = None
         self.is_test = is_test
         self.running = False
-        with open("config.ini", "r") as f:
-            # Muestrra las variables
-            while True:
-                line = f.readline()
-                if not line:
-                    break
-                v = line.split("=")
-                logger.info(f"Variables: {v}")
         logger.info(f"Server initialized with host: {host} and port: {port}")
 
 

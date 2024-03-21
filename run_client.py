@@ -14,3 +14,6 @@ if __name__ == "__main__":
     # Crea una instancia del servidor con los valores proporcionados
     client = Client(host, port)
     client.connect()
+    client.send_message("Hello, server!")
+    print(client.receive_message())
+    client.close()

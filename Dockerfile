@@ -33,7 +33,7 @@ RUN pip install --no-cache-dir -r ./requirements.txt
 EXPOSE 12345
 
 # start server
-# CMD ["python", "run_server.py", "0.0.0.0", "12345"]
+CMD ["python", "run_server.py", "0.0.0.0", "12345"]
 
-# To build -> docker build -t client .
-# To run -> docker run -p 12345:12345 client
+# To build -> docker build -t server .
+# To run -> docker run -p 12345:12345 server
