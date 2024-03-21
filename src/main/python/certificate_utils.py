@@ -48,6 +48,7 @@ def save_key_and_certificate_with_alias(key, cert, alias):
         keystore.entries[alias] = private_key
 
         # Guardar el almacén de claves en el archivo
+        logger.info(f"Saving key and certificate with alias '{keystore_path}' to keystore...")
         keystore.save(keystore_path, keystore_password)
         logger.info(f"Key and certificate with alias '{alias}' saved to keystore successfully.")
     except Exception as e:
