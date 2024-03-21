@@ -21,6 +21,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile_server.
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/secure_byod_vpn:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/secure_byod_vpn_server:latest

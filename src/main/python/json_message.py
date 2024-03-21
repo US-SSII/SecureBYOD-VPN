@@ -12,7 +12,6 @@ class JSONMessage:
             password (str): The receiver account.
             message (str): The amount in the message.
         """
-        # TODO: Use username, passworda and message for authentication
         self.username = username
         self.password = password
         self.message = message

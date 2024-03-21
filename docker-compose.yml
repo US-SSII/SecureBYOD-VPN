@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile_client
+    ports:
+      - "12345:12345"
+    volumes:
+      - ./src/main/python:/home/app/webapp/src/main/python  # Montar el directorio src/main/python en el contenedor
+    command: ["python", "run_client.py", "0.0.0.0", "12345"]
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile_server
+    ports:
+      - "12346:12345"  # Cambiar el puerto del contenedor del servidor si es necesario
+    volumes:
+      - ./src/main/python:/home/app/webapp/src/main/python  # Montar el directorio src/main/python en el contenedor
+    command: ["python", "run_server.py", "0.0.0.0", "12345"]

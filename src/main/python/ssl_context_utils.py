@@ -7,6 +7,7 @@ import OpenSSL
 # CONSTANTS
 ASN1 = OpenSSL.crypto.FILETYPE_ASN1
 config = ConfigParser()
+config.read("config.ini")
 current_directory = os.path.dirname(os.path.abspath(__file__))
 keystore_password = config.get("KEYSTORE", "password")
 keystore_path = os.path.join(current_directory, config.get("KEYSTORE", "path"))

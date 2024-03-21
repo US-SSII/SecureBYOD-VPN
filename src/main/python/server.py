@@ -16,6 +16,7 @@ from src.main.python.ssl_context_utils import jks_file_to_context
 # CONSTANTS
 current_directory = os.path.dirname(os.path.abspath(__file__))
 config = ConfigParser()
+config.read("config.ini")
 keystores_path = os.path.join(current_directory, config.get("KEYSTORE", "path"))
 server_alias = config.get("SERVER", "alias")
 common_name = config.get("SERVER", "common_name")
@@ -66,8 +67,10 @@ class Server:
         self.server_socket.listen(5)
 
         self.running = True
+        logger.info(f"Server listening on {self.host}:{self.port}")
         while self.running:
             try:
+                logger.info("Waiting for connections...")
                 client_socket, _ = self.server_socket.accept()
                 threading.Thread(target=self.handle_client, args=(client_socket,)).start()
             except Exception as e:
@@ -76,6 +79,7 @@ class Server:
 
     def handle_client(self, client_socket: socket) -> None:
         try:
+            logger.info(f"Connection established with {client_socket.getpeername()}")
             while True:
                 active, _, _ = select.select([client_socket], [], [], 1)
                 if not active:

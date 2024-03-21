@@ -12,5 +12,5 @@ if __name__ == "__main__":
     port = int(sys.argv[2])  # Obtén el puerto del segundo argumento (convertido a entero)
 
     # Crea una instancia del servidor con los valores proporcionados
-    server = Client(host, port)
-    server.connect()
+    client = Client(host, port)
+    client.connect()
