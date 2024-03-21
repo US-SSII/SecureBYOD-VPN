@@ -28,7 +28,7 @@ class Client:
         Establishes a secure connection to the server using SSL/TLS.
         """
         context= OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
-        self.client_socket = SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+        self.client_socket = OpenSSL.SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         self.client_socket.connect((self.host, self.port))
         logger.info(f"Connected to {self.host}:{self.port} securely")
 
