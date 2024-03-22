@@ -1,7 +1,6 @@
 import socket
 
 import OpenSSL
-from OpenSSL import SSL
 from loguru import logger
 
 
