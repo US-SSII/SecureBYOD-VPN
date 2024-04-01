@@ -1,0 +1,30 @@
+# base image
+FROM python:3.9-slim
+
+# setup environment variable
+ENV DockerHOME=/home/app/webapp
+ENV HOST_IP ""
+ENV PORT ""
+
+# set work directory
+RUN mkdir -p $DockerHOME
+WORKDIR $DockerHOME
+
+# where your code lives
+COPY ./src/main/python/client.py $DockerHOME/src/main/python/client.py
+COPY ./run_client.py $DockerHOME/run_client.py
+COPY ./src/main/python/json_message.py $DockerHOME/src/main/python/json_message.py
+COPY ./src/main/python/create_message.py $DockerHOME/src/main/python/create_message.py
+COPY ./requirements.txt $DockerHOME
+COPY ./src/main/python/config.ini $DockerHOME
+COPY ./src/main/python/config.ini $DockerHOME/src/main/python
+
+# run this command to install all dependencies
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir loguru pyOpenSSL
+
+# start server
+CMD python run_client.py ${HOST_IP} ${PORT}
+
+# To build -> docker build -t client -f Dockerfile_client .
+# To run (local) -> docker run -it --env HOST_IP=host.docker.internal --env PORT=12345 client

@@ -1,11 +1,19 @@
+import os
+from configparser import ConfigParser
+
 import jks
 import OpenSSL
 
+# CONSTANTS
 ASN1 = OpenSSL.crypto.FILETYPE_ASN1
+config = ConfigParser()
+config.read("config.ini")
+current_directory = os.path.dirname(os.path.abspath(__file__))
+keystore_password = config.get("KEYSTORE", "password")
+keystore_path = os.path.join(current_directory, config.get("KEYSTORE", "path"))
 
 def jks_file_to_context(key_alias, key_password=None):
-
-    keystore = jks.KeyStore.load('../resources/keystore.jks', 'keystore_password')
+    keystore = jks.KeyStore.load(keystore_path, keystore_password)
     pk_entry = keystore.private_keys[key_alias]
 
     # if the key could not be decrypted using the store password,
@@ -19,6 +27,8 @@ def jks_file_to_context(key_alias, key_password=None):
                      for alias, cert in keystore.certs]
 
     ctx = OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
+    cipher_suite = "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+    ctx.set_cipher_list(cipher_suite)
     ctx.use_privatekey(pkey)
     ctx.use_certificate(public_cert)
     ctx.check_privatekey() # want to know ASAP if there is a problem
@@ -27,12 +37,4 @@ def jks_file_to_context(key_alias, key_password=None):
         cert_store.add_cert(cert)
 
     return ctx
-
-def create_keystore():
-    keystore = jks.KeyStore.new('jks', [])
-    keystore.save('../resources/keystore.jks', 'keystore_password')
-
-
-if __name__ == "__main__":
-    create_keystore()
 
