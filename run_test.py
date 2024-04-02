@@ -21,7 +21,6 @@ server_alias = configuration.get("SERVER", "alias")
 common_name = configuration.get("SERVER", "common_name")
 password_path = os.path.join(current_directory, "passwords.json")
 message_path = os.path.join(current_directory, "messages.json")
-PATH = os.path.dirname(os.path.abspath(__file__))
 
 if __name__ == "__main__":
 

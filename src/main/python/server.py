@@ -25,7 +25,6 @@ server_alias = configuration.get("SERVER", "alias")
 common_name = configuration.get("SERVER", "common_name")
 password_path = os.path.join(current_directory, configuration.get("FILE_MANAGER", "password_path"))
 message_path = os.path.join(current_directory, configuration.get("FILE_MANAGER", "message_path"))
-PATH = os.path.dirname(os.path.abspath(__file__))
 
 class Server:
     def __init__(self, host: str, port: int, is_test: bool = False) -> None:

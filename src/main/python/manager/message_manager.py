@@ -1,5 +1,3 @@
-import hmac
-import json
 from configparser import ConfigParser
 
 from src.main.python.manager.file_manager import FileManager
