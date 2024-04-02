@@ -12,18 +12,27 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 keystore_password = configuration.get("KEYSTORE", "password")
 keystore_path = os.path.join(current_directory, configuration.get("KEYSTORE", "path"))
 
-def jks_file_to_context(key_alias, key_password=None):
+def jks_file_to_context(key_alias: str, key_password: str=None) -> OpenSSL.SSL.Context:
+    """
+    Loads a Java KeyStore file into an OpenSSL Context object.
+
+    Args:
+        key_alias (str): The alias of the key to load.
+        key_password (str, optional): The password for decrypting the key entry. Defaults to None.
+
+    Returns:
+        OpenSSL.SSL.Context: The OpenSSL Context object loaded with the key and certificates.
+    """
     keystore = jks.KeyStore.load(keystore_path, keystore_password)
     pk_entry = keystore.private_keys[key_alias]
 
-    # if the key could not be decrypted using the store password,
-    # decrypt with a custom password now
-    if not pk_entry.is_decrypted():
+    # If the key could not be decrypted using the store password,decrypt with a custom password now
+    if not pk_entry.is_decrypted() and key_password:
         pk_entry.decrypt(key_password)
 
-    pkey = OpenSSL.crypto.load_privatekey(ASN1, pk_entry.pkey)
-    public_cert = OpenSSL.crypto.load_certificate(ASN1, pk_entry.cert_chain[0][1])
-    trusted_certs = [OpenSSL.crypto.load_certificate(ASN1, cert.cert)
+    pkey = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_ASN1, pk_entry.pkey)
+    public_cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_ASN1, pk_entry.cert_chain[0][1])
+    trusted_certs = [OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_ASN1, cert.cert)
                      for alias, cert in keystore.certs]
 
     ctx = OpenSSL.SSL.Context(OpenSSL.SSL.TLS_METHOD)
@@ -32,12 +41,13 @@ def jks_file_to_context(key_alias, key_password=None):
     ctx.set_cipher_list(cipher_suite)
     ctx.use_privatekey(pkey)
     ctx.use_certificate(public_cert)
-    ctx.check_privatekey() # want to know ASAP if there is a problem
+    ctx.check_privatekey()  # Want to know ASAP if there is a problem
     cert_store = ctx.get_cert_store()
     for cert in trusted_certs:
         cert_store.add_cert(cert)
 
     return ctx
+
 
 
 

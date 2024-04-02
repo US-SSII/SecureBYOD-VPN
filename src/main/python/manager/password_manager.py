@@ -64,3 +64,13 @@ class PasswordManager(FileManager):
         """
         encrypted = hmac.new(token.encode(), password.encode(), digestmod='sha256')
         return encrypted.hexdigest()
+
+    def get_num_passwords(self) -> int:
+        """
+        Returns the number of passwords stored in the file.
+
+        Returns:
+            int: The number of passwords.
+        """
+        passwords = self._load()
+        return len(passwords)

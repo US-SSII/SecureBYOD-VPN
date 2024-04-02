@@ -23,6 +23,8 @@ configuration.read("configuration.ini")
 keystores_path = os.path.join(current_directory, configuration.get("KEYSTORE", "path"))
 server_alias = configuration.get("SERVER", "alias")
 common_name = configuration.get("SERVER", "common_name")
+password_path = os.path.join(current_directory, configuration.get("FILE_MANAGER", "password_path"))
+message_path = os.path.join(current_directory, configuration.get("FILE_MANAGER", "message_path"))
 PATH = os.path.dirname(os.path.abspath(__file__))
 
 class Server:
@@ -39,8 +41,8 @@ class Server:
         self.host = host
         self.port = port
         self.server_socket = None
-        self.password_manager = PasswordManager(os.path.join(PATH, '../resources/passwords.json'))
-        self.message_manager = MessageManager(os.path.join(PATH, '../resources/messages.json'))
+        self.password_manager = PasswordManager(password_path)
+        self.message_manager = MessageManager(message_path)
         self.is_test = is_test
         self.running = False
         logger.info(f"Server initialized with host: {host} and port: {port}")
@@ -83,7 +85,7 @@ class Server:
         """
         Handle client connections.
 
-        Parameters:
+        Args:
             client_socket (socket): Client socket object.
         """
         try:
@@ -137,7 +139,7 @@ class Server:
         """
         Send message in chunks to the client.
 
-        Parameters:
+        Args:
             client_socket (socket): Client socket object.
             message (str): Message to send.
 

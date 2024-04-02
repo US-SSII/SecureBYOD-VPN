@@ -14,7 +14,7 @@ class JSONMessage:
             message (str): The amount in the message.
         """
         self.action = action
-        if self.action not in ['register', 'message']:
+        if self.action not in ['register', 'message', None]:
             raise ValueError("Invalid action")
         self.username = username
         self.password = password

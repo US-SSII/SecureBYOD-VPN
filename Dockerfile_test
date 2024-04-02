@@ -1,0 +1,29 @@
+# base image
+FROM python:3.9-slim
+
+# setup environment variable
+ENV DockerHOME=/home/app/webapp
+
+# install dependencies
+RUN pip install --upgrade pip
+
+# Install necessary system libraries
+RUN apt-get update \
+    && apt-get install -y gcc
+
+# set work directory
+RUN mkdir -p $DockerHOME
+WORKDIR $DockerHOME
+
+# where your code lives
+COPY . $DockerHOME
+COPY ./src/main/python/configuration.ini $DockerHOME
+
+# run this command to install all dependencies
+RUN pip install --no-cache-dir -r ./requirements.txt
+
+# start server
+CMD python run_test.py
+
+# To build -> docker build -t client -f Dockerfile_client .
+# To run (local) -> docker run -it --env HOST_IP=host.docker.internal --env PORT=12345 client

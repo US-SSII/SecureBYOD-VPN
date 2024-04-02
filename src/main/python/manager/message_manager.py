@@ -33,3 +33,13 @@ class MessageManager(FileManager):
         messages.append(message_data)
         with open(self.file_path, "w") as file:
             json.dump(messages, file)
+
+    def get_num_messages(self) -> int:
+        """
+        Returns the number of messages stored in the file.
+
+        Returns:
+            int: The number of messages.
+        """
+        messages = self._load()
+        return len(messages)
