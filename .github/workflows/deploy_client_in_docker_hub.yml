@@ -1,4 +1,4 @@
-name: Docker Hub Deployment
+name: Docker Hub Client Deployment
 
 on: [push]
 

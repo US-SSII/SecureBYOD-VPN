@@ -1,4 +1,4 @@
-name: Docker Hub Server Deployment
+name: Docker Hub Test Deployment
 
 on: [push]
 
@@ -21,6 +21,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile_server
+          file: ./Dockerfile_test
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/secure_server_byod_vpn:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/secure_test_byod_vpn:latest
