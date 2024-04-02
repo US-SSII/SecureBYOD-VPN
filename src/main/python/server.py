@@ -11,22 +11,24 @@ from loguru import logger
 
 from src.main.python.certificate_utils import generate_key_pair, generate_certificate, \
     save_key_and_certificate_with_alias
+from src.main.python.json_message import JSONMessage
+from src.main.python.password_manager import PasswordManager
 from src.main.python.ssl_context_utils import jks_file_to_context
 
 # CONSTANTS
 current_directory = os.path.dirname(os.path.abspath(__file__))
-config = ConfigParser()
-config.read("config.ini")
-keystores_path = os.path.join(current_directory, config.get("KEYSTORE", "path"))
-server_alias = config.get("SERVER", "alias")
-common_name = config.get("SERVER", "common_name")
-
+configuration = ConfigParser()
+configuration.read("configuration.ini")
+keystores_path = os.path.join(current_directory, configuration.get("KEYSTORE", "path"))
+server_alias = configuration.get("SERVER", "alias")
+common_name = configuration.get("SERVER", "common_name")
 
 class Server:
     def __init__(self, host: str, port: int, is_test: bool = False) -> None:
         self.host = host
         self.port = port
         self.server_socket = None
+        self.password_manager = PasswordManager("../resources/passwords.json")
         self.is_test = is_test
         self.running = False
         logger.info(f"Server initialized with host: {host} and port: {port}")
@@ -91,6 +93,23 @@ class Server:
             client_socket.close()
 
     def actions(self, received_message: str) -> str:
+        received_message = JSONMessage.from_json(received_message)
+        action = received_message.action
+        print("Hola:"+received_message.username+"; "+received_message.password+"; "+received_message.action)
+        if action == "message":
+            logger.info(f"Login request received from {received_message.username}")
+            if self.password_manager.check_password(received_message.username, received_message.password):
+                logger.info(f"Login request succesfull")
+                logger.info(f"Message received from {received_message.username}: {received_message.message}")
+                return "Message received"
+            else:
+                logger.error(f"Invalid username or password")
+                return "Invalid username or password"
+        elif action == "register":
+            print("Llegué")
+            self.password_manager.save_pasword(received_message.username, received_message.password)
+            logger.info(f"You have been succesfully registered")
+            return "Register successful"
         return received_message
 
     def send_message_in_chunks(self, client_socket: socket, message: str) -> None:

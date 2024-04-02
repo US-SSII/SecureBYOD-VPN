@@ -6,11 +6,11 @@ import OpenSSL
 
 # CONSTANTS
 ASN1 = OpenSSL.crypto.FILETYPE_ASN1
-config = ConfigParser()
-config.read("config.ini")
+configuration = ConfigParser()
+configuration.read("configuration.ini")
 current_directory = os.path.dirname(os.path.abspath(__file__))
-keystore_password = config.get("KEYSTORE", "password")
-keystore_path = os.path.join(current_directory, config.get("KEYSTORE", "path"))
+keystore_password = configuration.get("KEYSTORE", "password")
+keystore_path = os.path.join(current_directory, configuration.get("KEYSTORE", "path"))
 
 def jks_file_to_context(key_alias, key_password=None):
     keystore = jks.KeyStore.load(keystore_path, keystore_password)
@@ -37,4 +37,6 @@ def jks_file_to_context(key_alias, key_password=None):
         cert_store.add_cert(cert)
 
     return ctx
+
+
 

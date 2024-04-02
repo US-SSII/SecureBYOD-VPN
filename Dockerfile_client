@@ -16,8 +16,8 @@ COPY ./run_client.py $DockerHOME/run_client.py
 COPY ./src/main/python/json_message.py $DockerHOME/src/main/python/json_message.py
 COPY ./src/main/python/create_message.py $DockerHOME/src/main/python/create_message.py
 COPY ./requirements.txt $DockerHOME
-COPY ./src/main/python/config.ini $DockerHOME
-COPY ./src/main/python/config.ini $DockerHOME/src/main/python
+COPY ./src/main/python/configuration.ini $DockerHOME
+COPY ./src/main/python/configuration.ini $DockerHOME/src/main/python
 
 # run this command to install all dependencies
 RUN pip install --upgrade pip && \

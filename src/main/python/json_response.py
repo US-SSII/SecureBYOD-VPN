@@ -29,3 +29,16 @@ class JSONResponse:
         """
         return json.dumps(self.to_dict(), ensure_ascii=False)
 
+    @staticmethod
+    def from_json(json_string: str) -> 'JSONResponse':
+        """
+        Creates a JSONResponse object from a JSON-formatted string.
+
+        Args:
+            json_string (str): The JSON-formatted string.
+
+        Returns:
+            JSONResponse: The JSONResponse object.
+        """
+        data = json.loads(json_string)
+        return JSONResponse(data['status'])

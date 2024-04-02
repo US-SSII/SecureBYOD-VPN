@@ -1,6 +1,7 @@
 from threading import Thread
 
 from src.main.python.client import Client
+from src.main.python.create_message import create_message
 from src.main.python.server import Server
 
 if __name__ == "__main__":
@@ -13,7 +14,5 @@ if __name__ == "__main__":
 
     client = Client(host, port)
     client.connect()
-    client.send_message("Hello, server!")
+    client.send_message(create_message())
     print(client.receive_message())
-    client.close()
-    thread_server.join()

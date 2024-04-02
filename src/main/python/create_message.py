@@ -11,7 +11,13 @@ def create_message() -> str:
     Returns:
         str: JSON message with MAC summary.
     """
-    message = JSONMessage(input("Username: "), input("Password: "), input("Meesage: "))
+    action = input("Las acciones aceptadas son: register, message \nAction: ")
+    if action == "register":
+        message = JSONMessage(action, input("Username: "), input("Password: "), "Nada")
+    elif action == "message":
+        message = JSONMessage(action, input("Username: "), input("Password: "), input("Message: "))
+    else:
+        raise ValueError("Invalid action")
     return message.to_json()
 
 def random_message() -> str:
