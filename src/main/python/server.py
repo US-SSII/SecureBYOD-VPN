@@ -102,6 +102,7 @@ class Server:
         except OpenSSL.SSL.ZeroReturnError:
             logger.info(f"Connection closed by the client.")
         except Exception as e:
+            print(e.with_traceback())
             logger.error(f"Error: {e}")
         finally:
             client_socket.close()

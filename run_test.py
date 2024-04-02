@@ -34,13 +34,14 @@ if __name__ == "__main__":
         message = random_message()
         message.action = "register"
         client.send_message(message.to_json())
-        print(client.receive_message())
+        logger.success(client.receive_message())
         message.action = "message"
         client.send_message(message.to_json())
-        print(client.receive_message())
+        logger.success(client.receive_message())
         message.message = generate_random_string(50)
         client.send_message(message.to_json())
-        print(client.receive_message())
+        logger.success(client.receive_message())
+        client.close()
 
     password_manager = PasswordManager(password_path)
     logger.info(f"Number of users: {password_manager.get_num_passwords()}")
