@@ -13,7 +13,7 @@ WORKDIR $DockerHOME
 # where your code lives
 COPY ./src/main/python/client.py $DockerHOME/src/main/python/client.py
 COPY ./run_client.py $DockerHOME/run_client.py
-COPY ./src/main/python/json_message.py $DockerHOME/src/main/python/json_message.py
+COPY src/main/python/json/json_message.py $DockerHOME/src/main/python/json/json_message.py
 COPY ./src/main/python/create_message.py $DockerHOME/src/main/python/create_message.py
 COPY ./requirements.txt $DockerHOME
 COPY ./src/main/python/configuration.ini $DockerHOME

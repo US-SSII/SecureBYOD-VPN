@@ -11,8 +11,9 @@ from loguru import logger
 
 from src.main.python.certificate_utils import generate_key_pair, generate_certificate, \
     save_key_and_certificate_with_alias
-from src.main.python.json_message import JSONMessage
-from src.main.python.password_manager import PasswordManager
+from src.main.python.json.json_message import JSONMessage
+from src.main.python.manager.message_manager import MessageManager
+from src.main.python.manager.password_manager import PasswordManager
 from src.main.python.ssl_context_utils import jks_file_to_context
 
 # CONSTANTS
@@ -22,42 +23,51 @@ configuration.read("configuration.ini")
 keystores_path = os.path.join(current_directory, configuration.get("KEYSTORE", "path"))
 server_alias = configuration.get("SERVER", "alias")
 common_name = configuration.get("SERVER", "common_name")
+PATH = os.path.dirname(os.path.abspath(__file__))
 
 class Server:
     def __init__(self, host: str, port: int, is_test: bool = False) -> None:
+        """
+        Initialize Server object.
+
+        Parameters:
+        - host (str): Host IP address.
+        - port (int): Port number.
+        - is_test (bool): Flag to indicate if in test mode.
+
+        """
         self.host = host
         self.port = port
         self.server_socket = None
-        self.password_manager = PasswordManager("../resources/passwords.json")
+        self.password_manager = PasswordManager(os.path.join(PATH, '../resources/passwords.json'))
+        self.message_manager = MessageManager(os.path.join(PATH, '../resources/messages.json'))
         self.is_test = is_test
         self.running = False
         logger.info(f"Server initialized with host: {host} and port: {port}")
-
 
     def load_certificate(self) -> SSL.Context:
         """
         Load SSL certificate and private key for the server.
         """
         if not os.path.exists(keystores_path):
-            # Si el alias no está presente en la keystore o la keystore no está disponible,
-            # genera un nuevo par de clave y certificado y lo guarda en la keystore
             logger.info("Certificate or key not found in keystore. Generating new ones...")
             server_key = generate_key_pair()
             server_cert = generate_certificate(server_key, common_name)
             save_key_and_certificate_with_alias(server_key, server_cert, server_alias)
-        # Intenta cargar el contexto nuevamente después de guardar el nuevo par de clave y certificado
         context = jks_file_to_context(server_alias)
-
         return context
 
     def start(self) -> None:
-        context = self.load_certificate()
+        """
+        Start the server.
 
+        This method initializes the SSL context, binds the server socket to the specified host and port,
+        and starts listening for incoming connections. It launches a separate thread to handle each client connection.
+        """
+        context = self.load_certificate()
         self.server_socket = SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         self.server_socket.bind((self.host, int(self.port)))
-
         self.server_socket.listen(5)
-
         self.running = True
         logger.info(f"Server listening on {self.host}:{self.port}")
         while self.running:
@@ -70,49 +80,68 @@ class Server:
                 break
 
     def handle_client(self, client_socket: socket) -> None:
+        """
+        Handle client connections.
+
+        Parameters:
+            client_socket (socket): Client socket object.
+        """
         try:
             logger.info(f"Connection established with {client_socket.getpeername()}")
             while True:
                 active, _, _ = select.select([client_socket], [], [], 1)
                 if not active:
                     continue
-
                 data = client_socket.recv(1024)
                 if not data:
                     break
-
                 received_message = data.decode()
                 message = self.actions(received_message)
                 self.send_message_in_chunks(client_socket, message)
-
         except OpenSSL.SSL.ZeroReturnError:
-            logger.info(f"Connection closed by the client.") # TODO: Tomar medidas si es necesario
+            logger.info(f"Connection closed by the client.")
         except Exception as e:
             logger.error(f"Error: {e}")
         finally:
             client_socket.close()
 
     def actions(self, received_message: str) -> str:
+        """
+        Perform actions based on received messages.
+
+        Args:
+            received_message (str): Received message.
+
+        Returns:
+            str: Response message.
+        """
         received_message = JSONMessage.from_json(received_message)
         action = received_message.action
-        print("Hola:"+received_message.username+"; "+received_message.password+"; "+received_message.action)
         if action == "message":
             logger.info(f"Login request received from {received_message.username}")
             if self.password_manager.check_password(received_message.username, received_message.password):
-                logger.info(f"Login request succesfull")
+                logger.info(f"Login request successful")
                 logger.info(f"Message received from {received_message.username}: {received_message.message}")
+                self.message_manager.save_message(received_message.username, received_message.message)
                 return "Message received"
             else:
                 logger.error(f"Invalid username or password")
                 return "Invalid username or password"
         elif action == "register":
-            print("Llegué")
-            self.password_manager.save_pasword(received_message.username, received_message.password)
-            logger.info(f"You have been succesfully registered")
+            self.password_manager.save_password(received_message.username, received_message.password)
+            logger.info(f"You have been successfully registered")
             return "Register successful"
         return received_message
 
     def send_message_in_chunks(self, client_socket: socket, message: str) -> None:
+        """
+        Send message in chunks to the client.
+
+        Parameters:
+            client_socket (socket): Client socket object.
+            message (str): Message to send.
+
+        """
         chunk_size = 512
         for i in range(0, len(message), chunk_size):
             chunk = message[i:i + chunk_size]
@@ -121,5 +150,9 @@ class Server:
         client_socket.sendall("END".encode("utf-8"))
 
     def stop(self) -> None:
+        """
+        Stop the server.
+        """
         self.running = False
         self.server_socket.close()
+

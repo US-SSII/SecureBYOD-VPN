@@ -2,38 +2,24 @@
 import random
 import string
 
-from src.main.python.json_message import JSONMessage
+from src.main.python.json.json_message import JSONMessage
 
 def create_message() -> str:
     """
-    Creates a JSON message with a MAC summary.
+    Creates a JSON message based on user input.
+
+    Accepted actions are "register" and "message".
 
     Returns:
-        str: JSON message with MAC summary.
+        str: A JSON message representing the action and the data provided by the user.
     """
-    action = input("Las acciones aceptadas son: register, message \nAction: ")
+    action = input("Accepted actions are:\n- register\n- message\nAction: ")
     if action == "register":
-        message = JSONMessage(action, input("Username: "), input("Password: "), "Nada")
+        message = JSONMessage(action, input("Username: "), input("Password: "), "Nothing")
     elif action == "message":
         message = JSONMessage(action, input("Username: "), input("Password: "), input("Message: "))
     else:
         raise ValueError("Invalid action")
     return message.to_json()
 
-def random_message() -> str:
-    """
-    Creates a random JSON message with a MAC summary.
 
-    Returns:
-        str: Random JSON message with MAC summary.
-    """
-    message = JSONMessage(generate_random_string(50), generate_random_string(50), generate_random_string(50))
-    return message.to_json()
-
-def generate_random_string(length):
-    characters = string.ascii_letters + string.digits  # Puedes ajustar los caracteres permitidos según tus necesidades
-    random_string = ''.join(random.choice(characters) for _ in range(length))
-    return random_string
-
-if __name__ == "__main__":
-    print(random_message())

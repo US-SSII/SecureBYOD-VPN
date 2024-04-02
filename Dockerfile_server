@@ -27,7 +27,7 @@ RUN rm -rf $DockerHOME/src/main/python/client.py
 RUN rm -rf $DockerHOME/run_client.py
 RUN rm -rf $DockerHOME/src/main/python/sniffer.py
 RUN rm -rf $DockerHOME/src/main/python/create_message.py
-COPY ./src/main/python/config.ini $DockerHOME
+COPY ./src/main/python/configuration.ini $DockerHOME
 
 # run this command to install all dependencies
 RUN pip install --no-cache-dir -r ./requirements.txt
