@@ -2,32 +2,47 @@ import pyshark
 from datetime import datetime
 from loguru import logger
 
+
 class TrafficCapture:
     """
     Class to manage network traffic capture.
     """
 
-    def __init__(self, interface='eth0') -> None:
+    def __init__(self, interface='lo') -> None:
         """
         Initializes a TrafficCapture object.
 
         Args:
-            interface (str): The network interface to capture traffic from (default is 'eth0').
+            interface (str): The network interface to capture traffic from (default is 'lo').
         """
         self.interface = interface
         self.cap = None
         self.capture_running = False
         self.filename = None
 
-    def start_capture(self) -> None:
+    def start_capture(self, ip_src=None, port_src=None, ip_dst=None, port_dst=None, protocol=None) -> None:
         """
         Starts capturing network traffic.
+
+        Args:
+            ip_src (str): Source IP address filter.
+            port_src (int): Source port filter.
+            ip_dst (str): Destination IP address filter.
+            port_dst (int): Destination port filter.
+            protocol (str): Protocol filter (e.g., 'tcp', 'udp', etc.).
         """
         if self.capture_running:
             logger.info("Capture is already running.")
             return
         try:
-            self.cap = pyshark.LiveCapture(interface=self.interface)
+            # Constructing the capture filter based on provided parameters
+            capture_filter = f'(ip.src == {ip_src} and tcp.srcport == {port_src}) or (ip.dst == {ip_dst} and tcp.dstport == {port_dst}) and {protocol}'
+
+            # Removing the trailing ' and ' if it exists
+            if capture_filter.endswith(' and '):
+                capture_filter = capture_filter[:-5]
+
+            self.cap = pyshark.LiveCapture(interface=self.interface, capture_filter=capture_filter)
             self.capture_running = True
             self.filename = self.generate_filename()
             logger.info(f"Capture started. Saving to '{self.filename}'.")
@@ -81,7 +96,8 @@ class TrafficCapture:
 # Example usage
 if __name__ == "__main__":
     capture = TrafficCapture(interface='Wi-Fi')
-    capture.start_capture()  # Start capture
+    capture.start_capture(ip_src='192.168.1.100', port_src=80, ip_dst='192.168.1.200', port_dst=443, protocol='tcp')
     input("Press Enter to stop capture...")
-    capture.stop_capture()   # Stop capture
+    capture.stop_capture()
+
 
