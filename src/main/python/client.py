@@ -1,6 +1,7 @@
 import socket
 
 import OpenSSL
+from OpenSSL import SSL
 from loguru import logger
 
 
@@ -25,10 +26,12 @@ class Client:
         """
         Establishes a secure connection to the server using SSL/TLS.
         """
-        context = OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
-        cipher_suite = "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
-        context.set_cipher_list(cipher_suite)
-        self.client_socket = OpenSSL.SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+        ctx = SSL.Context(SSL.TLS_METHOD)
+        ctx.set_options(SSL.OP_NO_SSLv2 | SSL.OP_NO_SSLv3 | SSL.OP_NO_TLSv1 | SSL.OP_NO_TLSv1_1)
+        ctx.set_min_proto_version(SSL.TLS1_3_VERSION)
+        #cipher_suite = "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+        #context.set_cipher_list(cipher_suite)
+        self.client_socket = OpenSSL.SSL.Connection(ctx, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         self.client_socket.connect((self.host, self.port))
         logger.info(f"Connected to {self.host}:{self.port} securely")
 

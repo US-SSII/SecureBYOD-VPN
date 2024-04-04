@@ -3,6 +3,7 @@ from configparser import ConfigParser
 
 import jks
 import OpenSSL
+from OpenSSL import SSL
 
 # CONSTANTS
 ASN1 = OpenSSL.crypto.FILETYPE_ASN1
@@ -35,9 +36,11 @@ def jks_file_to_context(key_alias: str, key_password: str=None) -> OpenSSL.SSL.C
     trusted_certs = [OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_ASN1, cert.cert)
                      for alias, cert in keystore.certs]
 
-    ctx = OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
-    cipher_suite = "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
-    ctx.set_cipher_list(cipher_suite)
+    ctx = SSL.Context(SSL.TLS_METHOD)
+    ctx.set_options(SSL.OP_NO_SSLv2 | SSL.OP_NO_SSLv3 | SSL.OP_NO_TLSv1 | SSL.OP_NO_TLSv1_1)
+    ctx.set_min_proto_version(SSL.TLS1_3_VERSION)
+    #cipher_suite = "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+    #ctx.set_cipher_list(cipher_suite)
     ctx.use_privatekey(pkey)
     ctx.use_certificate(public_cert)
     ctx.check_privatekey()  # Want to know ASAP if there is a problem
