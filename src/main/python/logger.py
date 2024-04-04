@@ -17,7 +17,7 @@ def load_logger(is_test: bool = False) -> None:
     if is_test:
         current_date = '9999-99-99'
         try:
-            with open("../logs/9999-99-99_log.txt", 'r+') as archivo:
+            with open("../traffic_capture/9999-99-99_log.txt", 'r+') as archivo:
                 archivo.seek(0)
                 archivo.truncate()
         except FileNotFoundError:
@@ -26,7 +26,7 @@ def load_logger(is_test: bool = False) -> None:
     # Create a file name with the date
     log_file_name = f'{current_date}_log.txt'
     log_file_path = os.path.join(
-        '../logs/', log_file_name)
+        '../traffic_capture/', log_file_name)
 
     # Configure the Loguru logger
     fmt = "{level} - {time} - {message}"

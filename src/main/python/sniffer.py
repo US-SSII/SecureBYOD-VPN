@@ -91,7 +91,7 @@ class TrafficCapture:
             str: The generated filename.
         """
         timestamp = datetime.now().strftime("%Y-%m-%d")
-        return f"../logs/{timestamp}_traffic_capture.txt"
+        return f"../_traffic_capture/{timestamp}_traffic_capture.txt"
 
 # Example usage
 if __name__ == "__main__":
