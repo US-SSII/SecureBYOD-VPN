@@ -36,13 +36,13 @@ class TrafficCapture:
             return
         try:
             # Constructing the capture filter based on provided parameters
-            capture_filter = f'(ip.src == {ip_src} and tcp.srcport == {port_src}) or (ip.dst == {ip_dst} and tcp.dstport == {port_dst}) and {protocol}'
+            capture_filter = '(tcp.srcport == 12345) or (tcp.dstport == 12345) and tls'
 
             # Removing the trailing ' and ' if it exists
             if capture_filter.endswith(' and '):
                 capture_filter = capture_filter[:-5]
 
-            self.cap = pyshark.LiveCapture(interface=self.interface, capture_filter=capture_filter)
+            self.cap = pyshark.LiveCapture(interface=self.interface, display_filter=capture_filter, capture_filter=capture_filter)
             self.capture_running = True
             self.filename = self.generate_filename()
             logger.info(f"Capture started. Saving to '{self.filename}'.")
@@ -76,12 +76,12 @@ class TrafficCapture:
                 port_src = pkt.tcp.srcport
                 port_dst = pkt.tcp.dstport
                 size = pkt.length
-                info = pkt.sniff_timestamp
+                protocol = pkt.transport_layer
 
                 with open(self.filename, 'a') as f:
-                    f.write(f"Source IP: {ip_src}, Destination IP: {ip_dst}, Source Port: {port_src}, Destination Port: {port_dst}, Size: {size}, Info: {info}\n")
-            except AttributeError:
-                pass
+                   f.write(f"Source IP: {ip_src}, Destination IP: {ip_dst}, Source Port: {port_src}, Destination Port: {port_dst}, Size: {size}, Info: {protocol}\n")
+            except AttributeError as e:
+                print(e.with_traceback())
 
     def generate_filename(self) -> str:
         """
@@ -95,8 +95,8 @@ class TrafficCapture:
 
 # Example usage
 if __name__ == "__main__":
-    capture = TrafficCapture(interface='Wi-Fi')
-    capture.start_capture(ip_src='192.168.1.100', port_src=80, ip_dst='192.168.1.200', port_dst=443, protocol='tcp')
+    capture = TrafficCapture(interface='Adapter for loopback traffic capture')
+    capture.start_capture(ip_src='192.168.1.100', port_src=12345, ip_dst='192.168.1.200', port_dst=12345, protocol='tcp')
     input("Press Enter to stop capture...")
     capture.stop_capture()
 
