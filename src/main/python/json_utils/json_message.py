@@ -41,6 +41,7 @@ class JSONMessage:
         Returns:
             str: The JSON-formatted string.
         """
+
         return json.dumps(self.to_dict(), ensure_ascii=False)
 
     @staticmethod

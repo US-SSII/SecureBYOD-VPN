@@ -21,8 +21,8 @@ port = int(configuration.get("SERVER", "port"))
 host = configuration.get("SERVER", "host")
 server_alias = configuration.get("SERVER", "alias")
 common_name = configuration.get("SERVER", "common_name")
-password_path = os.path.join(current_directory, "passwords.json")
-message_path = os.path.join(current_directory, "messages.json")
+password_path = os.path.join(current_directory, "passwords.json_utils")
+message_path = os.path.join(current_directory, "messages.json_utils")
 
 if __name__ == "__main__":
 

@@ -1,3 +1,4 @@
+import time
 from threading import Thread
 
 from src.main.python.client import Client
@@ -14,5 +15,15 @@ if __name__ == "__main__":
 
     client = Client(host, port)
     client.connect()
-    client.send_message(create_message())
+    while True:
+        time.sleep(0.1)
+        client.send_message(create_message())
+        response = client.receive_message()
+        print(response)
+        time.sleep(0.1)
+        want_continue = input("Do you want to continue? (y/n): ")
+        if want_continue.lower() != "y":
+            break
     print(client.receive_message())
+    client.close()
+    server.stop()

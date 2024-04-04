@@ -2,7 +2,7 @@
 import random
 import string
 
-from src.main.python.json.json_message import JSONMessage
+from src.main.python.json_utils.json_message import JSONMessage
 
 def create_message() -> str:
     """

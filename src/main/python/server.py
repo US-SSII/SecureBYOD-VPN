@@ -11,7 +11,7 @@ from loguru import logger
 
 from src.main.python.certificate_utils import generate_key_pair, generate_certificate, \
     save_key_and_certificate_with_alias
-from src.main.python.json.json_message import JSONMessage
+from src.main.python.json_utils.json_message import JSONMessage
 from src.main.python.manager.message_manager import MessageManager
 from src.main.python.manager.password_manager import PasswordManager
 from src.main.python.ssl_context_utils import jks_file_to_context
