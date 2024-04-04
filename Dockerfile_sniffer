@@ -24,3 +24,6 @@ RUN pip install --no-cache-dir -r ./requirements.txt
 
 # start server
 CMD python run_sniffer.py
+
+# To build -> docker build -t sniffer -f Dockerfile_sniffer .
+# To run (local) -> docker run sniffer

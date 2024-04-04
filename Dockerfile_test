@@ -25,5 +25,5 @@ RUN pip install --no-cache-dir -r ./requirements.txt
 # start server
 CMD python run_test.py
 
-# To build -> docker build -t client -f Dockerfile_client .
-# To run (local) -> docker run -it --env HOST_IP=host.docker.internal --env PORT=12345 client
+# To build -> docker build -t test -f Dockerfile_test .
+# To run (local) -> docker run test
