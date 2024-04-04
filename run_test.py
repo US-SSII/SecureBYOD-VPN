@@ -1,3 +1,4 @@
+import sys
 import time
 from configparser import ConfigParser
 from threading import Thread
@@ -19,16 +20,19 @@ port = int(configuration.get("SERVER", "port"))
 host = configuration.get("SERVER", "host")
 server_alias = configuration.get("SERVER", "alias")
 common_name = configuration.get("SERVER", "common_name")
-password_path = os.path.join(current_directory, "passwords.json_utils")
-message_path = os.path.join(current_directory, "messages.json_utils")
+password_path = os.path.join(current_directory, "passwords.json")
+message_path = os.path.join(current_directory, "messages.json")
 
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python run_test.py <number_of_clients>")
+        sys.exit(1)
 
     server = Server(host, port)
     thread_server = Thread(target=server.start)
     thread_server.start()
     time.sleep(1)
-    for _ in range(100):
+    for _ in range(int(sys.argv[1])):
         client = Client(host, port)
         client.connect()
         message = random_message()

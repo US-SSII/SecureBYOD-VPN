@@ -2,8 +2,8 @@ import os
 from configparser import ConfigParser
 
 import OpenSSL
-from OpenSSL import crypto
 import jks
+from OpenSSL import crypto
 from loguru import logger
 
 # CONSTANTS
