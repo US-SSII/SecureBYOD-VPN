@@ -1,8 +1,8 @@
 import os
 from configparser import ConfigParser
 
-import jks
 import OpenSSL
+import jks
 from OpenSSL import SSL
 
 # CONSTANTS

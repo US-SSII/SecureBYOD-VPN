@@ -3,6 +3,7 @@ FROM python:3.9-slim
 
 # setup environment variable
 ENV DockerHOME=/home/app/webapp
+ENV HOST_IP ""
 
 # install dependencies
 RUN pip install --upgrade pip
@@ -23,7 +24,7 @@ COPY ./src/main/python/configuration.ini $DockerHOME
 RUN pip install --no-cache-dir -r ./requirements.txt
 
 # start server
-CMD python run_test.py
+CMD python run_test.py ${NUM_USERS}
 
 # To build -> docker build -t test -f Dockerfile_test .
-# To run (local) -> docker run test
+# To run (local) -> docker run --env NUM_USERS=300 test
